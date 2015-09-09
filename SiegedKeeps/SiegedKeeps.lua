@@ -15,9 +15,6 @@ local LMP = LibStub("LibMapPins-1.0")
 
 -- Constatnts
 local NUM_KEEPS = 144  -- GetNumKeeps() returns 93 which isn't correct
-local FACTION_AD = 1
-local FACTION_EP = 2
-local FACTION_DC = 3
 local COLOR_AD = "|cF9F280"
 local COLOR_DC = "|c688AA5"
 local COLOR_EP = "|cDC564A"
@@ -53,12 +50,13 @@ end
 
 -- Callback function which is called every time another map is viewed, creates quest pins
 local function MapCallbackQuestPins()
+	-- if ZO_WorldMap:IsHidden() then return end
 	if LMP:GetZoneAndSubzone(true) ~= "cyrodiil/ava_whole" then return end	
 	
 	for i=1, NUM_KEEPS, 1 do
-		local ad = GetNumSieges(i, GetBattlegroundContext(), FACTION_AD)
-		local ep = GetNumSieges(i, GetBattlegroundContext(), FACTION_EP)
-		local dc = GetNumSieges(i, GetBattlegroundContext(), FACTION_DC)
+		local ad = GetNumSieges(i, GetBattlegroundContext(), ALLIANCE_ALDMERI_DOMINION)
+		local ep = GetNumSieges(i, GetBattlegroundContext(), ALLIANCE_EBONHEART_PACT)
+		local dc = GetNumSieges(i, GetBattlegroundContext(), ALLIANCE_DAGGERFALL_COVENANT)
 		if ad+ep+dc > 0 then
 			-- if not GetKeepUnderAttack(i, GetBattlegroundContext()) then
 				-- Smaller icon for resources
