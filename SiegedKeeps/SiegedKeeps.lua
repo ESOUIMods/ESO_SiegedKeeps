@@ -8,7 +8,7 @@ https://github.com/CaptainBlagbird
 
 -- Addon info
 SiegedKeeps = {}
-SiegedKeeps.name = "Sieged Keeps"
+SiegedKeeps.name = "SiegedKeeps"
 
 -- Libraries
 local LMP = LibStub("LibMapPins-1.0")
@@ -19,7 +19,7 @@ local COLOR_AD = "|cF9F280"
 local COLOR_DC = "|c7CA4C5"
 local COLOR_EP = "|cDC564A"
 local COLOR_ESO = "|cC5C29E"
-local PIN_TYPE_SIEGE = SiegedKeeps.name.." siege"
+local PIN_TYPE_SIEGE = SiegedKeeps.name.."_PinTypeSiege"
 local PIN_ICON_DIR = "SiegedKeeps/icons/"
 local PIN_ICON_AD       = PIN_ICON_DIR.."pin_AD.dds"
 local PIN_ICON_DC       = PIN_ICON_DIR.."pin_DC.dds"
@@ -94,7 +94,9 @@ local function MapCallbackQuestPins()
 			
 			-- Get keep position and create pin
 			local pinType, normalizedX, normalizedY = GetKeepPinInfo(i, GetBattlegroundContext())
-			LMP:CreatePin(PIN_TYPE_SIEGE, pinInfo, normalizedX, normalizedY)
+			if LMP:IsEnabled(PIN_TYPE_SIEGE) then
+				LMP:CreatePin(PIN_TYPE_SIEGE, pinInfo, normalizedX, normalizedY)
+			end
 		end
 	end
 	
@@ -108,7 +110,7 @@ local function MapCallbackQuestPins()
 end
 
 -- Event handler function for EVENT_PLAYER_ACTIVATED
-local function OnPlayerActivated(event)
+local function OnPlayerActivated(eventCode)
 	-- Get tootip of each individual pin
 	local pinTooltipCreator = {
 		creator = function(pin)
@@ -124,6 +126,4 @@ local function OnPlayerActivated(event)
 	
 	EVENT_MANAGER:UnregisterForEvent(SiegedKeeps.name, EVENT_PLAYER_ACTIVATED)
 end
-
--- Registering the event handler functions for the events
 EVENT_MANAGER:RegisterForEvent(SiegedKeeps.name, EVENT_PLAYER_ACTIVATED, OnPlayerActivated)
