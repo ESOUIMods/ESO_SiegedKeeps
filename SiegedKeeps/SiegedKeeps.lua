@@ -36,7 +36,7 @@ local PIN_SIZE_RESOURCE = 40
 local PIN_LEVEL = 10
 
 -- Local variables
-local isReadyForRefresh = true
+local isRefreshing = false
 
 
 -- Get the battleground context that matches the displayed AvA map
@@ -52,14 +52,38 @@ local function GetDisplayedBattlegroundContext()
 	return bgQuery
 end
 
--- Callback function which is called every time another map is viewed, creates quest pins
+-- Stop refreshing in interval if not yet stopped
+local function StopRefreshing()
+	if isRefreshing then
+		isRefreshing = not EVENT_MANAGER:UnregisterForUpdate(SiegedKeeps.name)
+	end
+end
+
+-- Start refreshing in interval if not yet started
+local function StartRefreshing()
+	if not isRefreshing then
+		isRefreshing = EVENT_MANAGER:RegisterForUpdate(SiegedKeeps.name, REFRESH_INTERVAL_MS, function() LMP:RefreshPins(PIN_TYPE_SIEGE) end)
+	end
+end
+
+-- Callback function which is called every time the map is viewed, creates quest pins
 local function MapCallbackQuestPins()
-	-- if ZO_WorldMap:IsHidden() then return end
-	if LMP:GetZoneAndSubzone(true) ~= "cyrodiil/ava_whole" then return end
-	
+	-- Only continue if map is open
+	if ZO_WorldMap:IsHidden() then
+		StopRefreshing()
+		return
+	end
+	-- Only continue if current map is the Cyrodiil overview
+	if LMP:GetZoneAndSubzone(true) ~= "cyrodiil/ava_whole" then
+		StopRefreshing()
+		return
+	end
 	-- Only continue if a valid battleground context is set
 	local bgQuery = GetDisplayedBattlegroundContext()
-	if bgQuery == BGQUERY_UNKNOWN then return end
+	if bgQuery == BGQUERY_UNKNOWN then
+		StopRefreshing()
+		return
+	end
 	
 	for i=1, NUM_KEEPS, 1 do
 		local ad = GetNumSieges(i, bgQuery, ALLIANCE_ALDMERI_DOMINION)
@@ -106,13 +130,8 @@ local function MapCallbackQuestPins()
 		end
 	end
 	
-	-- Refresh in the defined interval
-	if isReadyForRefresh then
-		isReadyForRefresh = false
-		-- Set the variable 100 ms before refreshing to avoid multiple parallel loops
-		zo_callLater(function() isReadyForRefresh = true end, REFRESH_INTERVAL_MS - 100)
-		zo_callLater(function() LMP:RefreshPins(PIN_TYPE_SIEGE) end, REFRESH_INTERVAL_MS)
-	end
+	-- Make sure refreshing is running
+	StartRefreshing()
 end
 
 -- Event handler function for EVENT_PLAYER_ACTIVATED
@@ -129,6 +148,8 @@ local function OnPlayerActivated(eventCode)
 	}
 	local pinLayout = {size = PIN_SIZE, level = PIN_LEVEL}
 	LMP:AddPinType(PIN_TYPE_SIEGE, MapCallbackQuestPins, nil, pinLayout, pinTooltipCreator)
+	-- Make sure the pins are updated every time the map is opened by using an action layer event
+	EVENT_MANAGER:RegisterForEvent(SiegedKeeps.name, EVENT_ACTION_LAYER_PUSHED, MapCallbackQuestPins)
 	
 	EVENT_MANAGER:UnregisterForEvent(SiegedKeeps.name, EVENT_PLAYER_ACTIVATED)
 end
