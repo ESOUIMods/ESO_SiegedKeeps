@@ -149,7 +149,7 @@ local function OnPlayerActivated(eventCode)
 	local pinLayout = {size = PIN_SIZE, level = PIN_LEVEL}
 	LMP:AddPinType(PIN_TYPE_SIEGE, MapCallbackQuestPins, nil, pinLayout, pinTooltipCreator)
 	-- Make sure the pins are updated every time the map is opened by using an action layer event
-	EVENT_MANAGER:RegisterForEvent(SiegedKeeps.name, EVENT_ACTION_LAYER_PUSHED, MapCallbackQuestPins)
+	EVENT_MANAGER:RegisterForEvent(SiegedKeeps.name, EVENT_ACTION_LAYER_PUSHED, function() LMP:RefreshPins(PIN_TYPE_SIEGE) end)
 	
 	EVENT_MANAGER:UnregisterForEvent(SiegedKeeps.name, EVENT_PLAYER_ACTIVATED)
 end
