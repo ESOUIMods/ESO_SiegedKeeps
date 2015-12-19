@@ -39,26 +39,32 @@ local PIN_LEVEL = 10
 local isReadyForRefresh = true
 
 
--- Function to get the correct battleground context
-local function GetBattlegroundContext()
-	local bgquery = BGQUERY_UNKNOWN 
-	if GetCurrentCampaignId() == GetAssignedCampaignId() then
-		bgquery = BGQUERY_ASSIGNED_CAMPAIGN
-	else
-		bgquery = BGQUERY_LOCAL 
+-- Get the battleground context that matches the displayed AvA map
+local function GetDisplayedBattlegroundContext()
+	local bgQuery = BGQUERY_UNKNOWN
+	if IsPlayerInAvAWorld() then
+		bgQuery = BGQUERY_LOCAL
+	-- elseif false then  -- TODO: Detect map displaying white keeps
+		-- bgQuery = BGQUERY_UNKNOWN
+	elseif GetAssignedCampaignId() ~= NONE then
+		bgQuery = BGQUERY_ASSIGNED_CAMPAIGN
 	end
-	return bgquery
+	return bgQuery
 end
 
 -- Callback function which is called every time another map is viewed, creates quest pins
 local function MapCallbackQuestPins()
 	-- if ZO_WorldMap:IsHidden() then return end
-	if LMP:GetZoneAndSubzone(true) ~= "cyrodiil/ava_whole" then return end	
+	if LMP:GetZoneAndSubzone(true) ~= "cyrodiil/ava_whole" then return end
+	
+	-- Only continue if a valid battleground context is set
+	local bgQuery = GetDisplayedBattlegroundContext()
+	if bgQuery == BGQUERY_UNKNOWN then return end
 	
 	for i=1, NUM_KEEPS, 1 do
-		local ad = GetNumSieges(i, GetBattlegroundContext(), ALLIANCE_ALDMERI_DOMINION)
-		local ep = GetNumSieges(i, GetBattlegroundContext(), ALLIANCE_EBONHEART_PACT)
-		local dc = GetNumSieges(i, GetBattlegroundContext(), ALLIANCE_DAGGERFALL_COVENANT)
+		local ad = GetNumSieges(i, bgQuery, ALLIANCE_ALDMERI_DOMINION)
+		local ep = GetNumSieges(i, bgQuery, ALLIANCE_EBONHEART_PACT)
+		local dc = GetNumSieges(i, bgQuery, ALLIANCE_DAGGERFALL_COVENANT)
 		if ad+ep+dc > 0 then
 			-- Smaller icon for resources
 			if GetKeepType(i) == KEEPTYPE_RESOURCE then
@@ -93,7 +99,7 @@ local function MapCallbackQuestPins()
 			pinInfo[1] = pinInfo[1]:gsub("%s+$", "")
 			
 			-- Get keep position and create pin
-			local pinType, normalizedX, normalizedY = GetKeepPinInfo(i, GetBattlegroundContext())
+			local pinType, normalizedX, normalizedY = GetKeepPinInfo(i, bgQuery)
 			if LMP:IsEnabled(PIN_TYPE_SIEGE) then
 				LMP:CreatePin(PIN_TYPE_SIEGE, pinInfo, normalizedX, normalizedY)
 			end
