@@ -3,10 +3,7 @@
 ## Author: |c70C0DECaptainBlagbird|r
 ## APIVersion: 100025
 ## Description: Highlights keeps in Cyrodiil that have siege weapons.
-## OptionalDependsOn:  LibMapPins-1.0
-
-libs/LibStub/LibStub.lua
-libs/LibMapPins-1.0/LibMapPins-1.0.lua
+## DependsOn: LibStub LibMapPins-1.0
 
 SiegedKeeps.lua
 

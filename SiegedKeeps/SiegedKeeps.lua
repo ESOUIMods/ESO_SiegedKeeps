@@ -11,7 +11,7 @@ SiegedKeeps = {}
 SiegedKeeps.name = "SiegedKeeps"
 
 -- Libraries
-local LMP = LibStub("LibMapPins-1.0")
+local LMP = LibStub("LibMapPins-1.0", false)
 
 -- Constatnts
 local NUM_KEEPS = 144  -- GetNumKeeps() returns 93 which isn't what we need
