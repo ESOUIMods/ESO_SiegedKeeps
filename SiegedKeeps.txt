@@ -1,9 +1,10 @@
-## Title: Sieged Keeps |c555555v1.0|r
-## Version: 1.0
+## Title: Sieged Keeps v1.02
+## Version: 1.02
+## AddOnVersion: 102
 ## Author: |c70C0DECaptainBlagbird|r
-## APIVersion: 100026
+## APIVersion: 101031 101032
 ## Description: Highlights keeps in Cyrodiil that have siege weapons.
-## DependsOn: LibStub LibMapPins-1.0
+## DependsOn: LibMapPins-1.0>=10034
 
 SiegedKeeps.lua
 
