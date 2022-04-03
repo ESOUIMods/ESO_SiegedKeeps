@@ -1,8 +1,8 @@
-## Title: Sieged Keeps v1.02
-## Version: 1.02
-## AddOnVersion: 102
+## Title: Sieged Keeps v1.03
+## Version: 1.03
+## AddOnVersion: 103
 ## Author: |c70C0DECaptainBlagbird|r
-## APIVersion: 101031 101032
+## APIVersion: 101032 101033
 ## Description: Highlights keeps in Cyrodiil that have siege weapons.
 ## DependsOn: LibMapPins-1.0>=10034
 
